@@ -1,130 +1,206 @@
-# BookMyScreen — Full-Stack Movie Ticket Booking Platform
+BookMyScreen
 
-A movie ticket booking platform built with React, Node.js, Express, MongoDB, Socket.io, and Razorpay — matching the project as described on the resume. This README doubles as a **study guide**: it's organized basic → advanced so you can learn (and defend in an interview) each layer in order.
+A full-stack movie ticket booking application built with React, Node.js, Express.js and MongoDB.
 
----
+Overview
 
-## 1. Tech Stack
+BookMyScreen is a web application that allows users to browse movies, view available shows, select seats and manage their bookings.
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 (Vite), React Router, Axios, Socket.io-client |
-| Backend | Node.js, Express.js |
-| Database | MongoDB (Mongoose) |
-| Real-time | Socket.io |
-| Payments | Razorpay |
-| Auth | JWT + bcrypt, role-based (`user` / `admin`) |
-| Containerization | Docker, Docker Compose |
+The application has a React-based frontend and a Node.js/Express backend with MongoDB for data storage. Real-time seat locking is handled using Socket.io to reduce the possibility of two users selecting the same seat at the same time.
 
----
+Features
 
-## 2. Project Structure
+* User registration and login
+* JWT-based authentication
+* Role-based access for users and admins
+* Browse movies and theatres
+* View available shows
+* Interactive seat selection
+* Real-time seat locking with Socket.io
+* Movie and show management for admins
+* Booking history
+* REST API-based backend
+* MongoDB database using Mongoose
+* Razorpay payment integration
+* Docker and Docker Compose configuration
 
-```
-bookmyscreen/
+Tech Stack
+
+Frontend
+
+* React
+* Vite
+* React Router
+* Axios
+* Socket.io Client
+
+Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT
+* bcrypt
+* Socket.io
+* Razorpay
+
+Tools
+
+* Git
+* GitHub
+* Docker
+* VS Code
+
+Project Structure
+
+BookMyScreen/
 ├── backend/
-│   ├── config/db.js              # MongoDB connection
-│   ├── models/                   # User, Movie, Theatre, Show, Booking
-│   ├── middleware/                # auth (JWT), validate, errorHandler, asyncHandler
-│   ├── controllers/               # business logic per resource
-│   ├── routes/                    # REST endpoints
-│   ├── sockets/seatSocket.js      # real-time seat locking
-│   ├── utils/seed.js              # demo data
-│   ├── server.js                  # app entry point
-│   └── Dockerfile
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── sockets/
+│   ├── utils/
+│   ├── server.js
+│   └── package.json
+│
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/                 # Home, MovieDetails, SeatSelection, Login, etc.
-│   │   ├── components/            # Navbar, MovieCard, SeatMap, ProtectedRoute
-│   │   ├── context/AuthContext.jsx
-│   │   ├── services/               # api.js (Axios), socket.js (Socket.io client)
-│   │   └── App.jsx
-│   ├── nginx.conf
-│   └── Dockerfile
-└── docker-compose.yml
-```
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+│
+├── .gitignore
+├── docker-compose.yml
+└── README.md
 
----
+Getting Started
 
-## 3. Running Locally (without Docker) — recommended while learning
+Prerequisites
 
-### Prerequisites
-- Node.js 18+
-- MongoDB running locally (or a free MongoDB Atlas cluster)
-- A free Razorpay test account (dashboard.razorpay.com) for test API keys — the app runs fine without real payments if you just want to browse/select seats
+Make sure you have the following installed:
 
-### Backend
-```bash
+* Node.js 18 or later
+* MongoDB or a MongoDB Atlas account
+* Git
+
+1. Clone the repository
+
+git clone https://github.com/suryanshsingh15/BookMyScreen.git
+cd BookMyScreen
+
+2. Setup the backend
+
 cd backend
-cp .env.example .env
-# edit .env: set MONGO_URI, JWT_SECRET, RAZORPAY_KEY_ID/SECRET
 npm install
-npm run seed      # creates admin/user accounts + sample movies, theatre, show
-npm run dev        # starts on http://localhost:5000
-```
 
-### Frontend (new terminal)
-```bash
+Create a .env file using .env.example and add your environment variables:
+
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+
+Run the database seed script:
+
+npm run seed
+
+Start the backend:
+
+npm run dev
+
+The backend will run on:
+
+http://localhost:5000
+
+3. Setup the frontend
+
+Open another terminal:
+
 cd frontend
 npm install
-npm run dev         # starts on http://localhost:5173
-```
+npm run dev
 
-Open **http://localhost:5173**. Demo logins (created by the seed script):
-- Admin: `admin@bookmyscreen.com` / `admin123`
-- User: `user@bookmyscreen.com` / `user123`
+The frontend will be available at:
 
----
+http://localhost:5173
 
-## 4. Running with Docker
+Application Flow
 
-```bash
-# from the project root
-cp backend/.env.example backend/.env   # fill in RAZORPAY keys if testing payments
+User
+  │
+  ▼
+React Frontend
+  │
+  ├── Authentication
+  ├── Movie & Theatre Browsing
+  ├── Show Selection
+  ├── Seat Selection
+  └── Booking
+  │
+  ▼
+Express REST API
+  │
+  ├── Authentication & Authorization
+  ├── Movie / Theatre / Show APIs
+  ├── Booking APIs
+  └── Payment APIs
+  │
+  ▼
+MongoDB
+
+Socket.io is used alongside the REST API for real-time seat-locking functionality.
+
+Database
+
+The application uses MongoDB with Mongoose.
+
+The main data models include:
+
+* User
+* Movie
+* Theatre
+* Show
+* Booking
+
+Authentication
+
+Authentication is handled using JSON Web Tokens (JWT).
+
+Passwords are hashed using bcrypt before being stored in the database. Role-based authorization is used to restrict admin functionality.
+
+Real-Time Seat Selection
+
+Socket.io is used for real-time communication between clients and the server.
+
+When a user selects a seat, the seat can be temporarily locked so that another user cannot select the same seat simultaneously.
+
+Payments
+
+Razorpay is integrated for handling the payment flow.
+
+For local development, Razorpay test credentials can be configured through the backend .env file.
+
+Docker
+
+The project includes Docker configuration for running the application using Docker Compose.
+
 docker compose up --build
-```
 
-This starts three containers: `mongo`, `backend` (port 5000), `frontend` (port 8080, served by Nginx). Open **http://localhost:8080**. Run the seed script once against the running backend container:
-```bash
-docker exec -it bookmyscreen-backend npm run seed
-```
+Future Improvements
 
----
+* Add movie search and filtering
+* Improve theatre and screen management
+* Add booking cancellation and refund support
+* Add email/SMS booking notifications
+* Improve seat-map customization
+* Add additional payment options
+* Improve mobile responsiveness
 
-## 5. Feature Walkthrough: Basic → Advanced
-*(This mirrors the order you should actually explain the project in an interview.)*
+License
 
-### Level 1 — Basic
-- **Express server + MongoDB connection** (`server.js`, `config/db.js`)
-- **Data models**: Movie, Theatre, User (`models/`)
-- **Movie & theatre discovery**: plain REST GET endpoints with query filters (`movieController.js`, `theatreController.js`)
-- **CRUD** for movies/theatres, gated to admins
+This project is intended for learning and demonstration purposes.
 
-### Level 2 — Intermediate
-- **JWT authentication**: register/login issue a signed token; `middleware/auth.js`'s `protect` verifies it on every private route
-- **Role-based access control**: `admin` middleware blocks non-admins from management routes
-- **Input validation**: `express-validator` checks request bodies before they ever reach a controller (`middleware/validate.js`)
-- **Centralized error handling**: controllers just `throw new Error(...)`; one middleware (`errorHandler.js`) formats every error response consistently — no repeated try/catch blocks
 
-### Level 3 — Advanced
-- **Showtime management & seat-map generation**: `showController.js` reads a theatre's screen layout (rows, seat categories, price multipliers) and generates a full seat list per show
-- **Real-time seat locking (Socket.io)**: `sockets/seatSocket.js` — when a user selects a seat, the server flips its status to `locked` in MongoDB and broadcasts that to everyone else viewing the same show (a Socket.io "room" keyed by showId), so two people can never lock the same seat. Locks auto-expire via `setTimeout` + a lazy check on fetch, so abandoned selections free up automatically.
-- **Razorpay payment integration**: two-step flow — `createBookingOrder` creates a Razorpay order server-side (never trusting a client-supplied amount), then `verifyPayment` re-computes the HMAC-SHA256 signature server-side to confirm the payment is genuine before marking seats `booked`.
-- **Docker containerization**: separate Dockerfiles for backend (Node) and frontend (multi-stage build → Nginx), orchestrated with `docker-compose.yml` alongside a MongoDB container.
-
----
-
-## 6. Interview Talking Points (things you'll likely be asked)
-
-- **"Why Socket.io instead of just polling the API?"** — Polling either wastes requests or has latency where two users could both see a seat as free and both try to book it. Socket.io pushes state changes instantly to everyone watching that show.
-- **"How do you stop double-booking?"** — The lock check-and-set happens against MongoDB inside the socket handler, and a booking's `create-order` step re-verifies the seat is still locked by that exact user before creating a Razorpay order — so even a client trying to skip the lock step gets rejected.
-- **"How do you verify a payment is real and not spoofed by the client?"** — Razorpay signs `order_id|payment_id` with your secret key. The backend recomputes that HMAC and compares it — this can't be forged without the secret key, which never reaches the browser.
-- **"What happens if a user locks a seat and abandons the page?"** — A `setTimeout` on the server releases it after `SEAT_LOCK_TTL_SECONDS`, and any subsequent fetch of the show also lazily clears expired locks — so there are two independent mechanisms, not one single point of failure.
-
----
-
-## 7. What's Deliberately Simplified (be upfront about this if asked)
-
-- Seat categories/pricing are set at theatre-creation time via the admin form; a production app might let admins edit an existing theatre's layout too.
-- No email/SMS confirmation after booking — could add via a service like SendGrid.
-- No refund/cancellation flow — `Booking.status` supports `cancelled` in the schema, but there's no endpoint yet; a natural "what would you add next" answer.
