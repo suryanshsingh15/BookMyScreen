@@ -1,0 +1,47 @@
+version: "3.8"
+
+# LEVEL: ADVANCED
+# Brings up all three pieces of the stack with one command: `docker compose up --build`
+#   - mongo: the database, with a named volume so data survives container restarts
+#   - backend: Express + Socket.io API, depends on mongo being up first
+#   - frontend: Nginx serving the built React app, proxies /api and /socket.io to backend
+services:
+  mongo:
+    image: mongo:7
+    container_name: bookmyscreen-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: bookmyscreen-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/bookmyscreen
+      - CLIENT_URL=http://localhost:8080
+      - JWT_SECRET=${JWT_SECRET:-replace_this_with_a_long_random_secret}
+      - JWT_EXPIRES_IN=7d
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
+      - SEAT_LOCK_TTL_SECONDS=300
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: bookmyscreen-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
